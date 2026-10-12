@@ -1,0 +1,2 @@
+export const AUTH_SERVICE = 'AUTH_SERVICE';
+export const MAIL_TRANSPORT = 'MAIL_TRANSPORT';

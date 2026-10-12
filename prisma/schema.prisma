@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum NotificationStatus {
+  pending
+  sent
+  failed
+}
+
+enum NotificationType {
+  booking_confirmed
+  payment_refunded
+}
+
+model Notification {
+  id         String             @id @default(uuid()) @db.Uuid
+  userId     String             @map("user_id") @db.Uuid
+  type       NotificationType
+  payload    Json
+  email      String?
+  subject    String?
+  body       String?
+  status     NotificationStatus @default(pending)
+  attempts   Int                @default(0)
+  lastError  String?            @map("last_error")
+  providerId String?            @map("provider_id")
+  sentAt     DateTime?          @map("sent_at") @db.Timestamptz(6)
+  createdAt  DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@map("notifications")
+}
+
+model ProcessedEvent {
+  id          String   @id
+  processedAt DateTime @default(now()) @map("processed_at") @db.Timestamptz(6)
+
+  @@map("processed_events")
+}
